@@ -1,0 +1,72 @@
+#!/bin/sh 
+# 
+# Copyright © 2011      Mega Nerd, Pty Ltd
+# Copyright © 2011-2012 Operational Dynamics Consulting, Pty Ltd
+#
+# Watch the current directory for changes and run `make` when any of them
+# changes on disk.
+# 
+
+#
+# The `inotifywait` program is sufficiently odd-ball that we test for it first.
+# 
+
+if [ ! -x "/usr/bin/inotifywait" ] ; then
+	echo "ERROR: This uses the inotifywait program, which on a Debian-based system is"
+	echo "part of the 'inotify-tools' package. Please install that and try again."
+	exit 1
+fi 
+
+PROGRAM="./redirect"
+PID=""
+
+#
+# Start by running a build.
+#
+
+while true ; do
+
+	make
+
+#
+# Assuming the build succeeded, run the program in the background, then loop
+# back to inotify.
+#
+
+	if [ $? -eq 0 ] && [ "$PROGRAM" ] ; then
+		$PROGRAM &
+		PID="$!"
+		sleep 0.1
+	else
+		PID=""
+	fi
+
+#
+# Wait for a file to be "saved" In this directory. Arguments to inotify:
+#
+# -q   
+#	   Quiet; twice means not to output anything.
+#
+# -e	
+#	   Event to watch for.
+#
+# --exclude
+#	   Exclude Vim swap files .swp, swx, .swpx and its file creation test
+#	   file 4913 and its temporary file written with a ~ suffix.
+#
+# This blocks until the condition arises...
+#
+
+	inotifywait -q -q -e 'close_write' --exclude '^\..*\.sw[px]*$|4913|~$' .
+
+#
+# ... so now a "save" has happened. If the program is running, kill it, then
+# loop back to run the build.
+#
+
+	if [ "$PID" ] ; then
+		kill $PID
+	fi
+
+done
+
