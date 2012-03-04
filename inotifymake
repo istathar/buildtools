@@ -35,8 +35,15 @@ if [ ! -x "/usr/bin/inotifywait" ] ; then
 	exit 1
 fi 
 
-PROGRAM="./redirect"
-PID=""
+#
+# The service to be run on a successful build is given by the first argument to the script.
+#
+
+if [ $# -eq 1 ] ; then
+	PROGRAM="$1"
+else
+	PROGRAM=""
+fi
 
 #
 # Start by running a build.
