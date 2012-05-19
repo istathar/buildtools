@@ -39,8 +39,8 @@ fi
 # The service to be run on a successful build is given by the first argument to the script.
 #
 
-if [ $# -eq 1 ] ; then
-	PROGRAM="$1"
+if [ $# -gt 0 ] ; then
+	PROGRAM="$@"
 else
 	PROGRAM=""
 fi
@@ -50,7 +50,7 @@ fi
 #
 
 while true ; do
-
+	clear
 	make
 
 #
