@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 #
 # Continuous rebuilding for software, driven by inotify.
 # 
@@ -39,11 +39,21 @@ fi
 # The service to be run on a successful build is given by the first argument to the script.
 #
 
+while [ $# -gt 0 ] ; do
+	if [ "$1" == "--" ] ; then
+		shift
+		break
+	fi
+	TARGETS="$TARGETS $1"
+	shift
+done
+
 if [ $# -gt 0 ] ; then
 	PROGRAM="$@"
 else
 	PROGRAM=""
 fi
+
 
 #
 # Start by running a build.
@@ -51,7 +61,7 @@ fi
 
 while true ; do
 	clear
-	make
+	make $TARGETS
 
 #
 # Assuming the build succeeded, run the program in the background, then loop
@@ -59,6 +69,7 @@ while true ; do
 #
 
 	if [ $? -eq 0 ] && [ "$PROGRAM" ] ; then
+		echo -e "EXEC\t$PROGRAM"
 		$PROGRAM &
 		PID="$!"
 		sleep 0.1
@@ -72,6 +83,9 @@ while true ; do
 # -q   
 #	   Quiet; twice means not to output anything.
 #
+# -r	
+#	   Recursive.
+#
 # -e	
 #	   Event to watch for.
 #
@@ -82,7 +96,7 @@ while true ; do
 # This blocks until the condition arises...
 #
 
-	inotifywait -q -q -e 'close_write' --exclude '^\..*\.sw[px]*$|4913|~$' .
+	inotifywait -q -q -r -e 'close_write' --exclude '^\..*\.sw[px]*$|4913|~$' .
 
 #
 # ... so now a "save" has happened. If the program is running, kill it, then
