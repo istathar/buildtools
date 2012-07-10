@@ -36,7 +36,13 @@ if [ ! -x "/usr/bin/inotifywait" ] ; then
 fi 
 
 #
-# The service to be run on a successful build is given by the first argument to the script.
+# Make targets can be listed on the command line when invoking. The service to
+# be run on a successful build is given by the first argument given after -- to
+# the script. For example,
+#
+# 	$ inotifymake -- ./program
+# 	$ inotifymake test
+#	$ inotifymake test -- ./program
 #
 
 while [ $# -gt 0 ] ; do
