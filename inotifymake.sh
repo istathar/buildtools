@@ -103,7 +103,7 @@ while true ; do
 #
 
 	inotifywait -q -q -r -e 'close_write' \
-		--exclude '^\..*\.sw[px]*$|4913|~$|.git/.*\.lock$|.*i\.log$' .
+		--exclude '^\..*\.sw[px]*$|4913|~$|.git/.*\.lock$|.*i\.log$|tmp/*' .
 
 #
 # ... so now a "save" has happened. If the program is running, kill it, then
