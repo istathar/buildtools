@@ -66,7 +66,7 @@ fi
 #
 
 while true ; do
-	clear
+	PID=""
 	make $TARGETS
 
 #
@@ -74,13 +74,16 @@ while true ; do
 # back to inotify.
 #
 
-	if [ $? -eq 0 ] && [ "$PROGRAM" ] ; then
-		echo -e "EXEC\t$PROGRAM"
-		$PROGRAM &
-		PID="$!"
-		sleep 0.1
+	if [ $? -eq 0 ] ; then
+		echo "DONE"
+		if [ "$PROGRAM" ] ; then
+			echo -e "EXEC\t$PROGRAM"
+			$PROGRAM &
+			PID="$!"
+			sleep 0.1
+		fi
 	else
-		PID=""
+		echo "FAIL"
 	fi
 
 #
@@ -113,6 +116,7 @@ while true ; do
 	if [ "$PID" ] ; then
 		kill $PID
 	fi
+	echo "AGAIN"
 
 done
 
