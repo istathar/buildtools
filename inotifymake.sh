@@ -75,7 +75,8 @@ while true ; do
 #
 
 	if [ $? -eq 0 ] ; then
-		echo "DONE"
+		echo -n "DONE "
+		date +%FT%TZ -u
 		if [ "$PROGRAM" ] ; then
 			echo -e "EXEC\t$PROGRAM"
 			$PROGRAM &
